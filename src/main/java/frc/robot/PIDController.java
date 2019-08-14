@@ -30,14 +30,15 @@ public class PIDController {
 	}
 	
 	public void input(double err) {
+		if (latest().millis == System.currentTimeMillis()) return;
 		if ((err > 0 && latest().err < 0) || (err < 0 && latest().err > 0)) {
-			points.clear();
+			reset();
 		}
 		points.add(new Point(System.currentTimeMillis(), err));
 	}
 	
 	public double getCorrection() {
-		return getP() + getI() + getD();
+		return getP() + getI();// + getD();
 	}
 	
 	public double getP() {
@@ -66,8 +67,16 @@ public class PIDController {
 		return D * derr / dt;
 	}
 	
-	public boolean isStable(double threshold) {
-		return Math.abs(latest().err) < threshold && Math.abs(getD()) / D * 8000/*ms*/ < threshold;
+	/**
+	 * Checks if all the recent points (back to now - time) are within the threshold.
+	 * @param threshold
+	 * @param time The time to filter the points to count by
+	 * @return
+	 */
+	public boolean isStable(double threshold, double time) {
+		if (points.size() == 0) return false;
+		if (System.currentTimeMillis() - points.get(0).millis < time) return false; // Not enough time has passed
+		return points.stream().filter(point -> point.millis > System.currentTimeMillis() - time).allMatch(point -> point.err < threshold && point.err > -threshold);
 	}
 	
 	public Point prev() {

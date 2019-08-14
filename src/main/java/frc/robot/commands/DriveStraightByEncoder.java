@@ -9,7 +9,7 @@ import frc.robot.subsystems.Drivetrain;
 
 public class DriveStraightByEncoder extends Command {
 
-    static final double ENCODER_TICKS_PER_INCH = 1;
+    static final double ENCODER_TICKS_PER_INCH = 40 / 188.5;
 
     double startYaw;
     PIDController pid;
@@ -40,7 +40,7 @@ public class DriveStraightByEncoder extends Command {
     @Override
     protected void initialize() {
         startYaw = Robot.gyro.getAngle();
-        pid = new PIDController(1e-2, 0, 0);
+        pid = new PIDController(1.75e-2, 1.2e-5, 7e-2);
         encoderStart = getAverageEncoderValue();
         timer.reset();
         timer.start();
@@ -53,7 +53,7 @@ public class DriveStraightByEncoder extends Command {
         double correction = pid.getCorrection();
         SmartDashboard.putNumber("Correction", correction);
         SmartDashboard.putNumber("DriveStraightByEncoder executing", Math.random());
-        SmartDashboard.putBoolean("PID stable (3deg threshold)", pid.isStable(3));
+        SmartDashboard.putBoolean("PID stable (3deg threshold)", pid.isStable(3, 1000));
         SmartDashboard.putNumber("Encoder ticks left", getEncoderTicksLeft());
         Robot.drivetrain.drive(speed - correction, speed + correction);
     }
@@ -72,9 +72,11 @@ public class DriveStraightByEncoder extends Command {
 
     @Override
     protected void end() {
+        Robot.drivetrain.drive(0);
     }
 
     @Override
     protected void interrupted() {
+        end();
     }
 }
