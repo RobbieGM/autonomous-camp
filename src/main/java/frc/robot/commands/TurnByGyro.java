@@ -28,8 +28,8 @@ public class TurnByGyro extends Command {
   @Override
   protected void initialize() {
     System.out.println("TurnByGyro init");
-    pid = new PIDController(0, 0, 0);
-    // pid = new PIDController(2.5e-2, 0, 1.5e-1);
+    // pid = new PIDController(0, 0, 0);
+    pid = new PIDController(1.5e-2, 4e-6, 0);
     gyroStart = Robot.gyro.getAngle();
     goalAngle = gyroStart + relativeGoal;
     timer = new Timer();
@@ -39,10 +39,6 @@ public class TurnByGyro extends Command {
 
   @Override
   protected void execute() {
-    pid.P = SmartDashboard.getNumber("P", 0.015);
-    pid.I = SmartDashboard.getNumber("I", 4e-6);
-    pid.D = SmartDashboard.getNumber("D", 0);
-
     double currentRelativeGoal = relativeGoal < 0 ? -timer.get() * DEGREES_PER_SECOND : timer.get() * DEGREES_PER_SECOND;
     double absRelativeGoal = Math.abs(relativeGoal);
     currentRelativeGoal = Math.max(-absRelativeGoal, Math.min(absRelativeGoal, currentRelativeGoal));
@@ -52,9 +48,6 @@ public class TurnByGyro extends Command {
     double correction = pid.getCorrection();
     Robot.drivetrain.drive(-correction, correction);
     SmartDashboard.putBoolean("TurnByGyro done", false);
-    SmartDashboard.putNumber("Actual P", pid.P);
-    SmartDashboard.putNumber("Actual I", pid.I);
-    SmartDashboard.putNumber("Actual D", pid.D);
     UnaryOperator<Double> twoDecimalPlaces = x -> Math.round(x * 100) / 100.0;
     SmartDashboard.putNumber("P correction", twoDecimalPlaces.apply(pid.getP()));
     SmartDashboard.putNumber("I correction", twoDecimalPlaces.apply(pid.getI()));

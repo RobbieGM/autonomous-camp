@@ -41,8 +41,8 @@ public class Drivetrain extends Subsystem {
      * @param rightWheelPower
      */
     public void drive(double leftWheelPower, double rightWheelPower) {
-        double left = constrainAbsolute(leftWheelPower, 0.15);
-        double right = constrainAbsolute(rightWheelPower, 0.15);
+        double left = constrainAbsolute(leftWheelPower, 0.2);
+        double right = constrainAbsolute(rightWheelPower, 0.2);
         SmartDashboard.putNumber("Left wheel power", left);
         SmartDashboard.putBoolean("Left wheel is NaN", left != left);
         leftWheels.forEach(wheel -> wheel.set(-left));

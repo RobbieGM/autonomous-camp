@@ -30,7 +30,7 @@ public class PIDController {
 	}
 	
 	public void input(double err) {
-		if (latest().millis == System.currentTimeMillis()) return;
+		// if (latest().millis == System.currentTimeMillis()) return;
 		if ((err > 0 && latest().err < 0) || (err < 0 && latest().err > 0)) {
 			reset();
 		}
@@ -38,7 +38,7 @@ public class PIDController {
 	}
 	
 	public double getCorrection() {
-		return getP() + getI();// + getD();
+		return getP() + getI() + getD();
 	}
 	
 	public double getP() {

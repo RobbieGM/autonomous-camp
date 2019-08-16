@@ -10,9 +10,18 @@ public class FullAutonomousProgram extends CommandGroup {
         // addSequential(new Command2());
         // these will run in order.
 
-        addSequential(new DriveStraightByEncoder(372 - 6, 0.1));
-        
-        // addSequential(new TurnByGyro(-90));
+        // 3 seconds -> 106in
+        // y = mx + 7.5
+        // 106 = 3m + 7.5
+        // 98.5 = 3m
+        // 32.83 = m
+        // y = 32.83x + 7.5
+        // (y - 7.5) = 32.83x
+        // 1 / 32.83(y-7.5) = x
+
+        addSequential(new DriveStraightByTime(199));
+        addSequential(new TurnRightByTime());
+        addSequential(new Shoot(2));
 
         // To run multiple commands at the same time,
         // use addParallel()
@@ -28,7 +37,40 @@ public class FullAutonomousProgram extends CommandGroup {
         // arm.
     }
 
-    void goAroundCargoOnce() {
-        
+    void loadTwoBallsWithEncoder() {
+        addSequential(new DriveStraightByEncoder(128)); // time: 123 + 11
+        addSequential(new Wait(), 1.5);
+        addSequential(new TurnByGyro(90));
+        addSequential(new DriveStraightByEncoder(58)); // 53 + 16
+        addSequential(new Shoot(2));
+        addSequential(new Wait(), 1.5);
+        // addSequential(new DriveStraightByEncoder(-25));
+        // addSequential(new Wait(), 1.5);    
+        addSequential(new TurnByGyro(183)); // 90
+        // addSequential(new Wait(), 1.5);
+        // addSequential(new TurnByGyro(90));
+        addSequential(new DriveStraightByEncoder(72));
+        addSequential(new Shoot(0.6));
+        addSequential(new Wait(), 1.5);
+        addSequential(new TurnByGyro(177)); // 90
+        // addSequential(new Wait(), 1.5);
+        // addSequential(new TurnByGyro(90));
+        addSequential(new DriveStraightByEncoder(74));
+        addSequential(new Shoot(2));
+    }
+
+    void drive(double inches) {
+        addSequential(new DriveStraightByTime(inches));
+        addSequential(new Wait(), 1.5);
+    }
+
+    void turn() {
+        addSequential(new TurnLeftByTime());
+        addSequential(new Wait(), 1.5);
+    }
+
+    void driveAndTurn(double inches) {
+        drive(inches);
+        turn();
     }
 }

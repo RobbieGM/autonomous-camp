@@ -15,9 +15,13 @@ public class DriveStraightByEncoder extends Command {
     PIDController pid;
     double encoderStart;
     double speed;
-    double distance;
+    double distanceTicks;
     Timer timer;
     double timeout;
+
+    public DriveStraightByEncoder(double inches) {
+        this(inches, 0.1);
+    }
 
     public DriveStraightByEncoder(double inches, double speed) {
         this(inches, speed, 99999);
@@ -26,9 +30,13 @@ public class DriveStraightByEncoder extends Command {
     public DriveStraightByEncoder(double inches, double speed, double timeoutSeconds) {
         requires(Robot.drivetrain);
         this.speed = speed;
-        distance = inches;
+        distanceTicks = inchesToEncoderTicksWithCoasting(inches);
         timeout = timeoutSeconds;
         timer = new Timer();
+    }
+
+    static double inchesToEncoderTicksWithCoasting(double inches) {
+        return 0.22 * (inches - 7.55);
     }
 
     double getAverageEncoderValue() {
@@ -40,7 +48,7 @@ public class DriveStraightByEncoder extends Command {
     @Override
     protected void initialize() {
         startYaw = Robot.gyro.getAngle();
-        pid = new PIDController(1.75e-2, 1.2e-5, 7e-2);
+        pid = new PIDController(3e-2, 1.2e-5, 7e-2);
         encoderStart = getAverageEncoderValue();
         timer.reset();
         timer.start();
@@ -59,9 +67,8 @@ public class DriveStraightByEncoder extends Command {
     }
 
     double getEncoderTicksLeft() {
-        double totalDistance = distance * ENCODER_TICKS_PER_INCH;
         double distanceGone = getAverageEncoderValue() - encoderStart;
-        return totalDistance - distanceGone;
+        return distanceTicks - distanceGone;
     }
 
     @Override

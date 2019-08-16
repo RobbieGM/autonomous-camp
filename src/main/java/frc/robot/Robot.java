@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -16,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.FullAutonomousProgram;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.ShooterAndElevator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,6 +23,7 @@ public class Robot extends TimedRobot {
 
     static Command fullAutoCommand;
     public static Drivetrain drivetrain;
+    public static ShooterAndElevator shooter;
     SendableChooser<Command> chooser = new SendableChooser<>();
     public static AHRS gyro = new AHRS();
 
@@ -40,9 +35,11 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         oi = new OI();
         drivetrain = new Drivetrain();
+        shooter = new ShooterAndElevator();
         // chooser.setDefaultOption("Default Auto", new ExampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
+        SmartDashboard.putNumber("Elevator target", shooter.getElevatorEncoderTicks());
     }
 
     /**
@@ -57,6 +54,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         SmartDashboard.putNumber("Encoder left average", drivetrain.getEncoder(Drivetrain.Side.LEFT));
         SmartDashboard.putNumber("Encoder right average", drivetrain.getEncoder(Drivetrain.Side.RIGHT));
+        SmartDashboard.putNumber("Elevator encoder", shooter.getElevatorEncoderTicks());
         Scheduler.getInstance().run();
     }
 
